@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-conda activate cvsys
+conda activate resnet-vs-vit
 python -m src.train \
   --model vit_b_16 \
   --pretrained 1 \
