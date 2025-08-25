@@ -205,3 +205,38 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# --- editors & project settings ---
+.vscode/
+.idea/
+.cursor/
+
+# --- OS noise ---
+.DS_Store
+
+# --- notebooks ---
+.ipynb_checkpoints/
+
+# --- experiments, logs & outputs (keep folders, not big files) ---
+logs/
+outputs/
+!logs/.gitkeep
+!outputs/.gitkeep
+# (Optional) keep small report artifacts you want in the repo:
+!outputs/**/test_metrics.json
+!outputs/**/confusion_matrix.png
+!outputs/**/fig_*.png
+
+# --- datasets ---
+data/
+!data/README.md   # explain where to download the dataset
+
+# --- model files / large artifacts ---
+*.pt
+*.pth
+*.onnx
+*.ckpt
+lightning_logs/
+wandb/
+.cache/
+pip-wheel-metadata/
