@@ -1,0 +1,15 @@
+name: resnet-vs-vit
+channels: [pytorch, nvidia, conda-forge]
+dependencies:
+  - python=3.10
+  - pytorch
+  - torchvision
+  - pytorch-cuda=12.1  # or your CUDA; if CPU-only, remove this line
+  - pip
+  - pip:
+    - scikit-learn
+    - opencv-python
+    - matplotlib
+    - numpy
+    - tqdm
+    - pyyaml
