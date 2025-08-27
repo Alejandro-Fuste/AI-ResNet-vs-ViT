@@ -11,21 +11,27 @@ def build_loaders(data_root: str,
                   num_workers: int = 4,
                   pin_memory: bool = True,
                   seed: int = 42):
+    
+    # Paths & build_transforms 
+    
     data_root = Path(data_root)
     weights, common_tf = build_transforms(model_name)
 
     train_dir = data_root / "train"
     test_dir  = data_root / "test"
 
+    # build datasets
     train_ds_full = datasets.ImageFolder(str(train_dir), transform=common_tf)
     test_ds       = datasets.ImageFolder(str(test_dir),  transform=common_tf)
 
+    # Split into train/val/test & use generator to ensure reproducibility
     g = torch.Generator().manual_seed(seed)
     n_total = len(train_ds_full)
     n_val   = int(val_split * n_total)
     n_train = n_total - n_val
     train_ds, val_ds = random_split(train_ds_full, [n_train, n_val], generator=g)
 
+    # build loaders
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
                               num_workers=num_workers, pin_memory=pin_memory)
     val_loader   = DataLoader(val_ds,   batch_size=batch_size, shuffle=False,
@@ -33,8 +39,10 @@ def build_loaders(data_root: str,
     test_loader  = DataLoader(test_ds,  batch_size=batch_size, shuffle=False,
                               num_workers=num_workers, pin_memory=pin_memory)
 
+    # class mapping
     class_to_idx = train_ds_full.dataset.class_to_idx if hasattr(train_ds_full, "dataset") else train_ds_full.class_to_idx
 
+    # return dict
     return {
         "weights": weights,
         "transforms": common_tf,
