@@ -1,6 +1,11 @@
 # Torch, TorchVision, and CUDA are installed via conda (see environment.yml)
 # This file is for pip-installed deps only.
 
+# Core deep learning
+torch==2.3.1
+torchvision==0.18.1
+
+# ML & utilities
 scikit-learn==1.5.1
 opencv-python==4.10.0.84
 matplotlib==3.9.2

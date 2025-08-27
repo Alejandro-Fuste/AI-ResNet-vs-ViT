@@ -1,4 +1,3 @@
-# src/transforms.py
 from torchvision.models import ResNet18_Weights, ViT_B_16_Weights
 
 def build_transforms(model_name: str):
