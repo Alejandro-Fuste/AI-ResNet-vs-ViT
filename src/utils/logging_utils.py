@@ -7,7 +7,7 @@ from time import perf_counter
 from typing import Dict, Iterable, Optional
 
 
-def create_logger(name: str = "cvsys", log_file: Optional[str] = None, level: int = logging.INFO) -> logging.Logger:
+def create_logger(name: str = "resnet-vs-vit", log_file: Optional[str] = None, level: int = logging.INFO) -> logging.Logger:
     """
     Create a simple logger that logs to stdout and (optionally) to a file.
     """

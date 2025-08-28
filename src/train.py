@@ -1,6 +1,7 @@
-import argparse, torch, torch.nn as nn, torch.optim as optim
+import argparse, os, torch, torch.nn as nn, torch.optim as optim
 from torchvision.models import resnet18, vit_b_16
 from .datasets import build_loaders
+from .utils.logging_utils import CSVLogger, Timer
 
 def get_model(model_name, num_classes, weights=None):
     if model_name == "resnet18":
@@ -49,6 +50,8 @@ def main():
     ap.add_argument("--epochs", type=int, default=20)
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--weight_decay", type=float, default=1e-4)
+    ap.add_argument("--logs_csv", default="logs")
+
     args = ap.parse_args()
 
   
@@ -61,11 +64,36 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
+    # --- CSV logging setup ---
+    os.makedirs(args.logs_dir, exist_ok=True)
+    csv_path = os.path.join(args.logs_dir, f"{args.model}_training_log.csv")
+    csvlog = CSVLogger(
+        csv_path,
+        fieldnames=["epoch", "train_loss", "val_loss", "val_acc", "lr", "secs"]
+    )
+
+    # --- Training loop ---
     best_acc = 0.0
     for epoch in range(args.epochs):
-        train_loss = train_one_epoch(model, loaders["train"], criterion, optimizer, device)
+        with Timer() as t:
+            train_loss = train_one_epoch(model, loaders["train"], criterion, optimizer, device)
+
         val_loss, val_acc = evaluate(model, loaders["val"], criterion, device)
-        print(f"Epoch {epoch+1:03d} | train_loss={train_loss:.4f} | val_loss={val_loss:.4f} | val_acc={val_acc:.4f}")
+        lr = optimizer.param_groups[0]["lr"]
+
+        print(f"Epoch {epoch+1:03d} | train_loss={train_loss:.4f} | val_loss={val_loss:.4f} "
+          f"| val_acc={val_acc:.4f} | lr={lr:.2e} | secs={t.elapsed:.1f}")
+        
+         # Write one CSV row per epoch
+        csvlog.log({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "val_loss": val_loss,
+            "val_acc": val_acc,
+            "lr": lr,
+            "secs": t.elapsed,
+        })
+
         best_acc = max(best_acc, val_acc)
 
     print(f"Best val acc: {best_acc:.4f}")
